@@ -1,0 +1,89 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="text-center text-dark mt-5">Login!</h2>
+            <div class="card my-5">
+
+                <form class="card-body cardbody-color p-lg-5" id="formLogin">
+
+                    <div class="text-center">
+                        <img src="/public/loginImage.webp"
+                            class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3" width="200px"
+                            alt="profile" />
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="LoginEmail" name="email"
+                            aria-describedby="emailHelp" placeholder="Email" required />
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="LoginPassword" name="password"
+                            placeholder="password" required />
+                    </div>
+                    <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Login</button>
+                    </div>
+                    <div class="text-center">
+                        <a href="/registro" class="fw-bold">
+                            Registrarse.</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-color {
+        background-color: #0e1c36;
+        color: #fff;
+    }
+
+    .profile-image-pic {
+        height: 200px;
+        width: 200px;
+        object-fit: cover;
+    }
+
+    .cardbody-color {
+        background-color: #ebf2fa;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+
+<script>
+
+    const formLogin = document.getElementById("formLogin");
+
+    formLogin.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const myHeaders = new Headers();
+
+        myHeaders.append("Content-Type", "application/json");
+        const raw = JSON.stringify({
+            email: LoginEmail.value,
+            password: LoginPassword.value
+        });
+        const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+        fetch("/api/v1/usuarios/login", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                if (result.code == 200) {
+                    localStorage.setItem("token", result.token);
+                    localStorage.setItem('usuario', JSON.stringify(result.usuario))
+                    localStorage.setItem('stamp', result.stamp)
+                    alert(result.message);
+                    location.href = "/";
+                } else {
+                    alert(result.message);
+                }
+            }).catch(error => console.log('error', error));
+    })
+</script>

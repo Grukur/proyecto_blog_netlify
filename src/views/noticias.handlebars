@@ -1,0 +1,140 @@
+<h1 class="text-center">Noticias</h1>
+
+<input id="usuario" type="hidden" value="{{usuario}}">
+
+<section class="row justify-content-center pb-5">
+  {{#each noticias}}
+  <div class="card col-3 cardNoticias" style="width: 18rem;">
+    <img src="{{this.rutaImagen}}" class="card-img-top pt-3" alt="...">
+    <div class="card-body text-center">
+      <h5 class="card-title">{{this.titulo}}</h5>
+      <h6 class="card-title">{{this.categoria}}</h6>
+      <p class="card-text">{{this.texto}}</p>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">{{this.createdAt}} por: {{this.autor}}</li>
+      <li class="list-group-item text-center">
+        <button id="{{this.noticiaId}}" class="btn like"><img src="/public/like.png" width="20px"></button>
+        <button id="{{this.noticiaId}}" class="btn dislike"><img src="/public/dislike.png" width="20px"></button>
+        <button id="msg" class="btn" value="{{this.noticiaId}}"><img src="/public/msg.png" data-bs-toggle="modal"
+            data-bs-target="#comentario" width="20px"></button>
+      </li>
+    </ul>
+  </div class="mb-3">
+  {{/each}}
+</section>
+
+
+<!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="comentario" tabindex="-1" aria-labelledby="comentarioLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="comentarioLabel">Comente</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <textarea class="form-control" id="comentarioMensaje" rows="3"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="guardarComentario" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+  .cardNoticias .card-img-top {
+    height: 28vh;
+    width: 100%;
+  }
+</style>
+
+<script>
+  let usuario = document.getElementById('usuario')
+  let guardarComentario = document.getElementById('guardarComentario');
+  let comentarioMensaje = document.getElementById('comentarioMensaje')
+  let like = document.querySelectorAll('.like')
+  like = [...like]
+  let dislike = document.querySelectorAll('.dislike')
+  dislike = [...dislike]
+
+  const tokenExiste = () => {
+    let token = localStorage.getItem("token");
+    if (!token) {
+      alert("Token no encontrado. Por favor login.");
+      location.href = '/login'
+      return;
+    }
+    return token
+  }
+
+  guardarComentario.addEventListener('click', (event) => {
+    event.preventDefault();
+    let comentario = comentarioMensaje.value
+    let noticiaId = msg.value
+
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { "Authorization": tokenExiste() },
+      body: comentario,
+      redirect: 'follow'
+    };
+
+    fetch('/api/v1/comentarios' + noticiaId, requestOptions)
+      .then(response => response.json())
+      .then(result => {
+        if (result.code == 201) {
+          alert(result.message);
+        } else {
+          alert(`Error ${result.message}: ${result.error}`);
+        }
+      })
+  })
+
+
+  like.forEach(boton => {
+    boton.addEventListener("click", async () => {
+      let noticiaId = boton.id;
+
+      const requestOptions = {
+        method: 'POST',
+        headers: { "Authorization": tokenExiste() },
+        redirect: 'follow',
+      };
+
+      let response = await fetch('/api/v1/reacciones/like/' + noticiaId, requestOptions)
+      let result = await response.json()
+      if (result.code == 201) {
+        alert(result.message);
+      } else {
+        alert(`Error ${result.message}: ${result.error}`);
+      }
+    })
+  })
+
+  dislike.forEach(boton => {
+    boton.addEventListener("click", async () => {
+      let noticiaId = boton.id;
+
+      const requestOptions = {
+        method: 'POST',
+        headers: { "Authorization": tokenExiste() },
+        redirect: 'follow'
+      };
+
+      let response = await fetch('/api/v1/reacciones/dislike/' + noticiaId, requestOptions)
+      let result = await response.json()
+      if (result.code == 201) {
+        alert(result.message);
+      } else {
+        alert(`Error ${result.message}: ${result.error}`);
+      }
+    })
+  })
+</script>

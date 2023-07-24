@@ -1,0 +1,12 @@
+<h1 class="text-center py-3">Vista perfil usuario.</h1>
+
+{{#if usuario}}
+<h2>Su ID es: {{usuario.dataValues.usuarioId}}</h2>
+<h2>Nombre: {{usuario.dataValues.autor}}</h2>
+<h2>Email: {{usuario.dataValues.email}}</h2>
+<h2>Se registro el: {{usuario.dataValues.createdAt}}</h2>
+
+{{else}}
+<h2>No se ha podido mostrar la información del su perfil.</h2>
+{{/if}}
+

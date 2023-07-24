@@ -1,0 +1,68 @@
+<h1 class="text-center py-3">DASHBOARD CRUD PRODUCTOS</h1>
+
+
+<!--tabla-->
+<section class="d-flex justify-content-center">
+    <!--boton agregar anime-->
+    <div id="scrollme">
+        <table class="table table-light table-striped my-5">
+            <thead class="text-center">
+                <tr class="text-center mx-auto">
+                    <th scope="col">ID</th>
+                    <th class="col" scope="col">Titulo</th>
+                    <th scope="col">Autor</th>
+                    <th scope="col">Texto</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Imagen</th>
+                    <th scope="col">Detalles</th>
+                    <th scope="col">Eliminar</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {{#each noticias}}
+                <tr class="text-center ">
+                    <th scope="row">{{this.dataValues.noticiaId}}</th>
+                    <td>{{this.dataValues.titulo}}</td>
+                    <td>{{this.dataValues.autor}}</td>
+                    <td>{{this.dataValues.texto}}</td>
+                    <td>{{this.dataValues.categoria}}</td>
+                    <td><img src="{{this.dataValues.rutaImagen}}" alt="" width="50px" height="50px"></td>
+                    <td><a class="btn detailBtn btn-success" href="noticias/">Detalles</a></td>
+                    <td><button class="btn deleteBtn btn-danger" value="{{this.dataValues.noticiaId}}">Eliminar</button>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    token = localStorage.getItem('token')
+    let deleteBtn = document.querySelectorAll('.deleteBtn');
+    deleteBtn.forEach(boton => {
+        boton.addEventListener('click', async (event) => {
+            let id = event.target.attributes[1].value
+
+            let requestOptions = {
+                headers: { 'Authorization': token },
+                method: 'DELETE',
+            };
+
+            try {
+                const response = await fetch(`/api/v1/noticias/cloud/${id}`, requestOptions);
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    alert(result.message)
+                    location.href = `/dashboard?token=${token}`
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.log("Error:", error);
+            }
+        })
+    })
+</script>
